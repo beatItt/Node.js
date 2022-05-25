@@ -1,0 +1,13 @@
+-if u have a folder, which you want to add to a github repo
+1. create a github repo say Node.js
+2. then cd to pc folder, initialise as git folder by : git init
+3. then : touch README, git add README
+4. git commit -m "first commit"
+5. git remote add origin https://github.com/beatItt/Node.js.git
+6. git push origin master //pushed to branch master
+7. add .gitignore, where .git is that is ref , add node_modules/*
+8. git add --all(all added except node_modules/*)
+9. git commit -m "node files"
+10.git push--errr: no upstream branch
+11.   git push --set-upstream origin master
+//pushed successfully or git push origin master
