@@ -1,16 +1,23 @@
 const express=require('express');
 var morgan=require('morgan');
+const mongoose=require('mongoose');
+const Blog=require('./models/blog')
 
 const app=express(); //app is instance of express app
-
+//connect to db, then listen for requests from client
+const dbURI='mongodb+srv://ruchi:ruchi@practical-node.lol01sm.mongodb.net/?retryWrites=true&w=majority';
+mongoose.connect(dbURI).then((result)=>{
+    console.log("connected to db");
+    app.listen(3000,()=>{
+        console.log("listening on port 3000 for requests")
+    });//localhost is auto inferred
+}).catch((err)=>{console.log(err)});
 
 //register view engine
 app.set('view engine','ejs');//by default,ejs views looked up inside views folder, app.set('views',folder)
 //listen on port 3000
 
-app.listen(3000,()=>{
-    console.log("listening on port 3000 for requests")
-});//localhost is auto inferred
+
 
 
 //middleware shipped with express, for allowing serving static files to browser
@@ -29,21 +36,42 @@ app.use((req,res,next)=>{
 //npm install --save package : no longer needed post npm 5 versions to add to package.json dep section, and not just locally
 });
 
+//db collection blogs using model Blog
+//save new blog
+
+// let savedId="";
+// app.get("/save-blog",(req,res)=>{
+//     const blog=new Blog({ //instantiate new Blog obj for save, not needed to instantiate for read methods
+//     title:"A chill cat",
+//     snippet:"A short tale",
+//     body:"once there was a naughty cute cat"
+// });
+//     blog.save().then((result) => {savedId=result._id;res.send(result)}).catch((err)=> console.log(err));//render view, send response to browser
+//     console.log(savedId);
+// });
+
+// app.get("/find-last-saved",(req,res)=>{
+//     Blog.findById(savedId).then((result)=>{res.send(result)}).catch((err)=>{console.log(err)});
+// })
+
+
+
+
 //handlers for requests
 //callbk fn fired when req comes
 app.get('/',(req,res)=>{
-    const blogs=[
-        {"title":"A lazy fox","snippet":"A clever story of legend"},
-        {"title":"A clever fox","snippet":"A beautiful story of legend"},
-        {"title":"An intelligent fox","snippet":"A nice story of legend"}
-    ];
-    res.render('index',{title:'Home',blogs});//{key:val,key2:val2} can write just ,blogs cuz blog:blogs same word
+    res.redirect("/blogs");
+  //{key:val,key2:val2} can write just ,blogs cuz blog:blogs same word
 });
 
 app.get('/about',(req,res)=>{
     res.render('about',{title:'About'});
 });
 
+//blogs route
+app.get("/blogs",(req,res)=>{//result is array of blogs
+    Blog.find().sort({createdAt:-1}).then((result)=>{res.render("index",{title:"All Blogs",blogs:result})}).catch((err)=>{console.log(err)});
+});
 app.get('/blogs/create',(req,res)=>{
         res.render('create',{title:'Create blog'})
 });
